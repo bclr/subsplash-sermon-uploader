@@ -1,0 +1,25 @@
+{
+  "name": "subsplash-sermon-uploader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bclr/subsplash-sermon-uploader.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bclr/subsplash-sermon-uploader/issues"
+  },
+  "homepage": "https://github.com/bclr/subsplash-sermon-uploader#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "moment": "^2.26.0",
+    "mysql": "^2.18.1",
+    "puppeteer": "^3.3.0"
+  }
+}
