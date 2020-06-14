@@ -10,6 +10,10 @@ const getSermons = require('./sermonsSql').getSermons
 const launchOptions = { headless: false }
 
 async function enterMediaItemDetails(page, sermon) {
+  let additionLabel = sermon.verseStart
+  if (sermon.verseEnd)
+    additionLabel = `${additionLabel} - ${sermon.verseEnd}`
+
   await page.waitFor(1000)
   await page.waitForFunction(
     'document.querySelector("body").innerText.includes("Basic Info")'
@@ -18,16 +22,21 @@ async function enterMediaItemDetails(page, sermon) {
   await findLabelAndEnterValue(page, 'Subtitle', sermon.subtitle)
   await findLabelAndEnterValue(page, 'Speaker', sermon.speaker)
   await findLabelAndEnterValue(page, 'Date', moment(sermon.date).format('MM/DD/YYYY'))
-  debugger
-  await page.evaluate(() => {
-    return $('.sui-media-uploader__action-text--link:contains("Upload audio")').click()
-  })
+  if (additionLabel)
+    await findLabelAndEnterValue(page, 'Additional Label', additionLabel)
+  
   await page.waitFor(1000)
-  const input = await page.evaluate(() => {
-    return $('input[type="file"]')[1]
+  const fileInputs = await page.$$('input[type="file"]')
+  debugger
+  await fileInputs[1].uploadFile(path.join('F:/BCLR ftp backup/public_html/wp-content/uploads/sermons', sermon.fileName))
+  await page.waitFor(2000)
+  await page.waitForFunction(
+    'document.querySelector("body").innerText.includes("for processing.")'
+  )
+  await page.evaluate(() => {
+    return $('button:contains("Save draft")')[0].click()
   })
-  await input.uploadFile(path.join('F:/BCLR ftp backup/public_html/wp-content/uploads/sermons/images', sermon.fileName))
-  await page.waitFor(3000)
+  await page.waitFor(2000)
 }
 
 async function createMediaItem(page) {
@@ -53,12 +62,13 @@ async function login(page) {
 
   await login(page)
   const sermons = await getSermons()
-  console.log(sermons)
-  await createMediaItem(page)
-  await enterMediaItemDetails(page, sermon[0])
-
-  await page.waitFor(10000)
-
+  //console.log(sermons)
+  sermons = sermons.slice(0, 10)
+  for (sermon in sermons) {
+    await createMediaItem(page)
+    await enterMediaItemDetails(page, sermon)
+  }
+  //await page.waitFor(10000)
   await browser.close()
 })()
 
