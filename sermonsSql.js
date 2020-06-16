@@ -12,6 +12,7 @@ const query = util.promisify(connection.query).bind(connection)
 
 const getSermonsSql = `
 SELECT
+  wp_sb_sermons.id,
 	wp_sb_sermons.title,
 	wp_sb_sermons.description as subtitle,
   wp_sb_preachers.name as speaker,
